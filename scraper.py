@@ -52,7 +52,7 @@ class GameLogs(StatsScraper):
 # Example usage:
 # This will fetch game logs for the player for the 2023, 2024, and 2025 seasons.
 luka_logs = GameLogs("Luka Dončić")
-df = luka_logs.fetch_data(seasons=[2023, 2024, 2025])
+df = luka_logs.fetch_data(seasons=[2019, 2020, 2021, 2022, 2023, 2024, 2025])
 # df = data.to_csv("luka_game_logs.csv", index=False)
 
 # Step 2: Clean the data using your partner's cleaning code
@@ -62,7 +62,7 @@ df = df.fillna(0)
 df = df[~df['GS'].isin(['Inactive', 'Did Not Dress'])]
 
 # Drop unnecessary columns if they exist
-columns_to_drop = ['Rk', 'Unnamed: 5', 'Age', 'Unnamed: 7', 'G', 'ORB', 'DRB']
+columns_to_drop = ['Rk', 'Age', 'Unnamed: 7', 'G', 'ORB', 'DRB', 'GS']
 for column in columns_to_drop:
     if column in df.columns:
         df = df.drop(column, axis=1)

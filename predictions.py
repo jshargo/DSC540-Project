@@ -34,7 +34,7 @@ xfList, xDataSets, Y = arrange(dat)
 models = []
 featureImportances = []
 for i in range(0, len(xDataSets)):
-	Xtrain, Xtest, Ytrain, Ytest = train_test_split(xDataSets[i], Y, test_size=0.1, random_state=123)
+	Xtrain, Xtest, Ytrain, Ytest = train_test_split(xDataSets[i], Y, test_size=0.2, random_state=123)
 	h = tree.DecisionTreeRegressor()
 	#models.append(h)
 	h.fit(Xtrain, Ytrain)

@@ -30,9 +30,10 @@ def arrange(dat):
 
 	return xfList, xDataSets, Y
 
+
 xfList, xDataSets, Y = arrange(dat)
-models = []
-featureImportances = []
+#models = []
+#featureImportances = []
 for i in range(0, len(xDataSets)):
 	Xtrain, Xtest, Ytrain, Ytest = train_test_split(xDataSets[i], Y, test_size=0.2, random_state=123)
 	h = tree.DecisionTreeRegressor()
@@ -44,7 +45,7 @@ for i in range(0, len(xDataSets)):
 	for j in range(0, len(xFeatures)):
 		w[xFeatures[j]] = k[j]
 	FIsorted = sorted(w.items(), key=lambda p: p[1], reverse=True)
-	featureImportances.append(w)
+	#featureImportances.append(FIsorted)
 	print("\nNum features used in training: " + str(h.n_features_in_))
 	print("Feature importances: ")
 	if (i < 5):
@@ -55,6 +56,7 @@ for i in range(0, len(xDataSets)):
 	preds = h.predict(Xtest)
 	print("Mean Squared Error: " + str(mean_squared_error(Ytest, preds)))
 	print("Mean Absolute Error: " + str(mean_absolute_error(Ytest, preds)))
+	print("R2: " + str(r2_score(Ytest, preds)))
 
 	
 

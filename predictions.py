@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 #import math
 #import random
-from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, mean_absolute_error
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, root_mean_squared_error
 from sklearn.model_selection import train_test_split
 # https://scikit-learn.org/stable/
 from sklearn import tree
@@ -33,32 +33,72 @@ def arrange(dat):
 
 xfList, xDataSets, Y = arrange(dat)
 #models = []
+
+rmse = [0, 0, 0, 0, 0, 0]; mse = [0, 0, 0, 0, 0, 0]; mae = [0, 0, 0, 0, 0, 0]; r2 = [0, 0, 0, 0, 0, 0]
+#Sums of scores averaged among trials inner loop
+#mse = [[], [], [], [], [], []]; mae = [[], [], [], [], [], []]; r2 = [[], [], [], [], [], []]
 #featureImportances = []
-for i in range(0, len(xDataSets)):
-	Xtrain, Xtest, Ytrain, Ytest = train_test_split(xDataSets[i], Y, test_size=0.2, random_state=123)
-	h = tree.DecisionTreeRegressor()
-	#models.append(h)
-	h.fit(Xtrain, Ytrain)
-	k = h.feature_importances_
-	xFeatures = xfList[i]
-	w = dict()
-	for j in range(0, len(xFeatures)):
-		w[xFeatures[j]] = k[j]
-	FIsorted = sorted(w.items(), key=lambda p: p[1], reverse=True)
-	#featureImportances.append(FIsorted)
-	print("\nNum features used in training: " + str(h.n_features_in_))
-	print("Feature importances: ")
-	if (i < 5):
-		print(FIsorted)
-	else:
-		print(FIsorted[0:12])
+numTestRuns = 100; numTrials = 100
+for testRun in range(0, numTestRuns):
 
-	preds = h.predict(Xtest)
-	print("Mean Squared Error: " + str(mean_squared_error(Ytest, preds)))
-	print("Mean Absolute Error: " + str(mean_absolute_error(Ytest, preds)))
-	print("R2: " + str(r2_score(Ytest, preds)))
+	for i in range(0, len(xDataSets)):
+		Xtrain, Xtest, Ytrain, Ytest = train_test_split(xDataSets[i], Y, test_size=0.2)
+		h = tree.DecisionTreeRegressor()
+		h.fit(Xtrain, Ytrain)
+		#models.append(h)
+		# k = h.feature_importances_
+		# xFeatures = xfList[i]
+		# w = dict()
+		# for j in range(0, len(xFeatures)):
+		# 	w[xFeatures[j]] = k[j]
+		# FIsorted = sorted(w.items(), key=lambda p: p[1], reverse=True)
+		# #featureImportances.append(FIsorted)
+		# print("\nNum features used in training: " + str(h.n_features_in_))
+		# print("Feature importances: ")
+		# if (i < 5):
+		# 	print(FIsorted)
+		# else:
+		# 	print(FIsorted[0:12])
+		
+		
+		rmseSum = 0; mseSum = 0; maeSum = 0; r2Sum = 0
+		for trial in range(0, numTrials):
+			preds = h.predict(Xtest)
+			# mseNow.append(mean_squared_error(Ytest, preds))
+			# maeNow.append(mean_absolute_error(Ytest, preds))
+			# r2Now.append(r2_score(Ytest, preds))
+			rmseSum += root_mean_squared_error(Ytest, preds)
+			mseSum += mean_squared_error(Ytest, preds)
+			maeSum += mean_absolute_error(Ytest, preds)
+			r2Sum += r2_score(Ytest, preds)
+		
+		rmse[i] += ((rmseSum/numTrials))
+		mse[i] += ((mseSum/numTrials))
+		mae[i] += ((maeSum/numTrials))
+		r2[i] += ((r2Sum/numTrials))
 
-	
+mseAvg = [0, 0, 0, 0, 0, 0]; maeAvg = [0, 0, 0, 0, 0, 0]; r2Avg = [0, 0, 0, 0, 0, 0]; rmseAvg = [0, 0, 0, 0, 0, 0]
+for i in range(0, len(mse))	:
+	print("\nNum features used in training: " + str(len(xfList[i])))
+	rmseAvg[i] = rmse[i]/numTestRuns
+	mseAvg[i] = mse[i]/numTestRuns
+	maeAvg[i] = mae[i]/numTestRuns
+	r2Avg[i] = r2[i]/numTestRuns
+	print("Root Mean Squared Error: " + str(rmseAvg[i]))
+	print("Mean Squared Error: " + str(mseAvg[i]))
+	print("Mean Absolute Error: " + str(maeAvg[i]))
+	print("R2: " + str(r2Avg[i]))
+
+avgrmse = sum(rmseAvg)/6
+avgmse = sum(mseAvg)/6
+avgmae = sum(maeAvg)/6
+avgr2 = sum(r2Avg)/6
+
+print("\nTotal Averages: ")
+print("Root Mean Squared Error: " + str(avgrmse))
+print("Mean Squared Error: " + str(avgmse))
+print("Mean Absolute Error: " + str(avgmae))
+print("R2: " + str(avgr2))
 
 
 
